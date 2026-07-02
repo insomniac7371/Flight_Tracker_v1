@@ -14,7 +14,10 @@
     html, body { height: 100%; width: 100%; overflow: hidden; background: var(--bg); }
     body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; color: #e9f0fb; }
 
-    #stage { position: absolute; inset: 0 0 var(--bar-h) 0; }
+    /* Tab bar is hidden until the Flight tab is enabled in the weather app's
+       Settings (ABOUT section). Until then the weather pane gets the full screen. */
+    #stage { position: absolute; inset: 0; }
+    body.tabs-on #stage { inset: 0 0 var(--bar-h) 0; }
 
     .pane {
       position: absolute; inset: 0;
@@ -43,8 +46,9 @@
     /* Bottom tab bar */
     #tabs {
       position: absolute; left: 0; right: 0; bottom: 0; height: var(--bar-h);
-      display: flex; background: #070a11; border-top: 1px solid rgba(255,255,255,.08);
+      display: none; background: #070a11; border-top: 1px solid rgba(255,255,255,.08);
     }
+    body.tabs-on #tabs { display: flex; }
     #tabs button {
       flex: 1; border: 0; background: transparent; color: #7d93b2;
       font-size: 13px; font-weight: 800; letter-spacing: .08em;
@@ -105,9 +109,25 @@
 
     let flightLoaded = false;
 
+    // Flight tab is opt-in: enabled from the weather app's Settings → ABOUT.
+    // Same-origin localStorage, so a storage event flips it live, no reload.
+    function flightTabEnabled() {
+      try { return localStorage.getItem("flightTabEnabled") === "1"; }
+      catch (e) { return false; }
+    }
+    function applyTabMode() {
+      const on = flightTabEnabled();
+      document.body.classList.toggle("tabs-on", on);
+      if (!on) show("weather");
+    }
+    window.addEventListener("storage", (e) => {
+      if (e.key === "flightTabEnabled") applyTabMode();
+    });
+
     // Poll the feeder; only mount its iframe once reachable so we never show
     // the browser's "connection refused" page. Keeps the placeholder until then.
     async function checkFeeder() {
+      if (!flightTabEnabled()) return; // skip polling while the tab is hidden
       let up = false;
       try {
         await fetch(FLIGHT_URL, { mode: "no-cors", cache: "no-store" });
@@ -141,6 +161,7 @@
     document.getElementById("tabFlight").addEventListener("click", () => show("flight"));
     document.getElementById("tabWeather").addEventListener("click", () => show("weather"));
     show(START_PANE);
+    applyTabMode();
   </script>
 </body>
 </html>

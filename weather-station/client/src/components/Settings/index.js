@@ -256,6 +256,16 @@ const UpdatePanel = ({ open }) => {
   const [info, setInfo] = useState(null);
   const [status, setStatus] = useState(null); // null | checking | current | updating | error
   const [errMsg, setErrMsg] = useState(null);
+  // Flight tab visibility in the kiosk shell — shared via same-origin
+  // localStorage; the shell listens for the storage event and reacts live.
+  const [flightTab, setFlightTab] = useState(
+    () => window.localStorage.getItem("flightTabEnabled") === "1"
+  );
+
+  const saveFlightTab = (on) => {
+    window.localStorage.setItem("flightTabEnabled", on ? "1" : "0");
+    setFlightTab(on);
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -335,6 +345,19 @@ const UpdatePanel = ({ open }) => {
           {errMsg}
         </div>
       ) : null}
+      <div className={styles.updateRow}>
+        <span className={styles.updateVersion}>
+          FLIGHT TAB (needs SDR feeder)
+        </span>
+        <ToggleButton
+          button1Label={"ON"}
+          button2Label={"OFF"}
+          val={flightTab}
+          button1Val={true}
+          button2Val={false}
+          cb={saveFlightTab}
+        />
+      </div>
     </div>
   );
 };

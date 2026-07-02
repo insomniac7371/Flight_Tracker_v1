@@ -1,8 +1,10 @@
 .container {
+  /* Fill whatever viewport we're given — standalone (800×480) or inside
+     the kiosk shell iframe (800×434 after its 46px tab bar). Fixed minimums
+     here cause double scrollbars in the iframe. */
   width: 100vw;
   height: 100vh;
-  min-width: 800px;
-  min-height: 480px;
+  overflow: hidden;
   display: grid;
   grid-template-columns: auto 290px;
   grid-template-rows: auto;
