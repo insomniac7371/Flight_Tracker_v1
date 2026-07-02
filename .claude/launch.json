@@ -1,0 +1,20 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dad-flight-tracker",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["server.py"],
+      "cwd": "prototype",
+      "port": 8765
+    },
+    {
+      "name": "weather-station",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["./server/index.js"],
+      "cwd": "weather-station",
+      "port": 8081,
+      "autoPort": false
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+prototype/server.out.log
+prototype/server.err.log
+prototype/server-out.log
+prototype/server-err.log
+prototype/data/
+prototype/tools/.cache/
+node_modules/
+weather-station/settings.json

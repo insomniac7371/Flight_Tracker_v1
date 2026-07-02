@@ -1,0 +1,134 @@
+.card {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(10, 16, 26, 0.55);
+  border: 1px solid rgba(120, 170, 255, 0.22);
+  font-family: Rubik;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.callsign {
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #6fc0ff;
+}
+
+.track-btn {
+  margin-left: auto;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: #2f6dd0;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.close {
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.close:hover {
+  opacity: 1;
+}
+
+.photo-wrap {
+  position: relative;
+  margin: 6px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.photo {
+  width: 100%;
+  height: auto;
+  max-height: 98px;
+  object-fit: cover;
+  display: block;
+}
+
+.credit {
+  position: absolute;
+  right: 5px;
+  bottom: 4px;
+  font-size: 7px;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(0, 0, 0, 0.45);
+  padding: 1px 4px;
+  border-radius: 3px;
+  line-height: 1.2;
+}
+
+.route {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+.arrow {
+  opacity: 0.55;
+  font-size: 12px;
+}
+
+.route-names {
+  font-size: 13px;
+  opacity: 0.7;
+  margin-top: 1px;
+  word-break: break-word;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+}
+.grid > div {
+  display: flex;
+  flex-direction: column;
+}
+.grid span {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  opacity: 0.55;
+}
+.grid strong {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 8px;
+  margin-top: 6px;
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+.loading {
+  margin-top: 6px;
+  font-size: 13px;
+  opacity: 0.6;
+}

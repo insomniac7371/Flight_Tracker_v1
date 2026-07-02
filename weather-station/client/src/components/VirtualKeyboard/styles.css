@@ -1,0 +1,94 @@
+.keyboard {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  padding: 6px 6px 12px;
+  background: rgba(8, 13, 22, 0.97);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  animation: kb-slide-up 0.14s ease-out;
+}
+
+@keyframes kb-slide-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
+/* Numpad rows are narrower and centered */
+.numpad-row {
+  max-width: 280px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.key {
+  height: 46px;
+  flex: 1;
+  max-width: 74px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(48, 72, 108, 0.9);
+  color: #e8f0ff;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: "Rubik", sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.07s;
+}
+
+.key:active {
+  background: rgba(80, 130, 210, 0.95);
+}
+
+/* Wider modifier keys: Shift, Backspace, ABC, 123 */
+.key-wide {
+  max-width: 96px;
+  font-size: 15px;
+  background: rgba(22, 38, 64, 0.9);
+}
+
+/* Spacebar */
+.key-space {
+  flex: 4;
+  max-width: 340px;
+}
+
+/* Done / Enter */
+.key-done {
+  max-width: 80px;
+  background: #2a5fb0;
+  font-size: 20px;
+}
+.key-done:active {
+  background: #3a7de0;
+}
+
+/* Backspace — slightly red tint */
+.key-del {
+  background: rgba(90, 30, 30, 0.85);
+}
+.key-del:active {
+  background: rgba(160, 50, 50, 0.9);
+}
+
+/* Shift active (caps locked) */
+.key-active {
+  background: rgba(74, 158, 255, 0.45);
+}

@@ -1,0 +1,9 @@
+[Unit]
+Description=Pi Weather Station auto-update (git pull from GitHub)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=flightrack
+ExecStart=/home/flightrack/Dad-Flight-Tracker/weather-station/tools/auto-update.sh

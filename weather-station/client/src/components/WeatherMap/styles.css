@@ -1,0 +1,448 @@
+.no-map {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Rubik;
+  flex-direction: column;
+  font-size: 12px;
+}
+
+.dark {
+  color: #f6f6f444;
+}
+
+.light {
+  color: #3a393888;
+}
+
+/* Aircraft (flight) overlay
+   Leaflet injects divIcon markup raw into the map, so these target the global
+   class names emitted by aircraftIcon() rather than CSS-module locals. */
+:global(.map-container) {
+  position: relative;
+}
+
+:global(.leaflet-div-icon.ac-marker) {
+  background: transparent;
+  border: none;
+}
+
+:global(.ac-marker .ac-rot) {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.65));
+  transform-origin: 50% 50%;
+}
+
+.acBadge {
+  position: absolute;
+  top: 52px;
+  left: 10px;
+  z-index: 1000;
+  padding: 7px 14px;
+  border-radius: 16px;
+  background: rgba(8, 14, 22, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cfe4ff;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.acPopup strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+}
+.acPopup span {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+/* OpenWeatherMap overlay layer chips */
+.wxLayers {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 70px; /* clear the home button */
+  z-index: 1000;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+  align-items: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.wxLayers::-webkit-scrollbar {
+  display: none;
+}
+
+.wxChip {
+  padding: 6px 13px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(8, 14, 22, 0.78);
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.wxChipOn {
+  background: rgba(74, 158, 255, 0.22);
+  border-color: rgba(74, 158, 255, 0.5);
+  color: #9fd0ff;
+}
+
+.wxHint {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.45);
+  padding-left: 2px;
+}
+
+/* Smooth crossfade between RainViewer radar frames (no abrupt swaps) */
+:global(.rv-frame) {
+  transition: opacity 0.5s ease-in-out;
+}
+
+/* Aircraft category legend (bottom-left of the map) */
+.acLegend {
+  position: absolute;
+  left: 8px;
+  bottom: 10px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 3px 5px;
+  border-radius: 6px;
+  background: rgba(8, 14, 22, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+}
+
+.acLegendItem {
+  display: flex;
+  align-items: center;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.acLegendItem i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  margin-right: 4px;
+  display: inline-block;
+}
+
+.milRing {
+  background: transparent !important;
+  border: 1.5px solid #ff5c5c;
+  width: 9px !important;
+  height: 9px !important;
+}
+
+/* City/town weather value labels (points mode) */
+:global(.leaflet-div-icon.wxpt-marker) {
+  background: transparent;
+  border: none;
+  overflow: visible;
+}
+:global(.wxpt-marker .wxpt) {
+  display: inline-block;
+  /* lift the value above the town label on the basemap */
+  transform: translate(-50%, -24px);
+  font-family: "Rubik", "Segoe UI", sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #ffd36b;
+  text-shadow: 0 0 2px #000, 0 0 4px #000, 0 1px 2px rgba(0, 0, 0, 0.9);
+  white-space: nowrap;
+}
+
+.wxChipMode {
+  font-style: normal;
+  font-weight: 800;
+}
+
+/* Maritime (AIS) vessel markers */
+:global(.leaflet-div-icon.vessel-marker) {
+  background: transparent;
+  border: none;
+}
+:global(.vessel-marker .vs-rot) {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.6));
+  transform-origin: 50% 50%;
+}
+
+/* Airport / military-base markers */
+:global(.leaflet-div-icon.airfield-marker) {
+  background: transparent;
+  border: none;
+}
+:global(.airfield-marker .af-wrap) {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.9);
+}
+:global(.airfield-marker .af-dot) {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.45);
+}
+:global(.airfield-marker .af-civ) {
+  color: #cfe4ff;
+}
+:global(.airfield-marker .af-civ .af-dot) {
+  background: #79c0ff;
+}
+:global(.airfield-marker .af-mil) {
+  color: #ffd0d0;
+}
+:global(.airfield-marker .af-mil .af-dot) {
+  background: #ff6b6b;
+}
+
+/* Home recenter button (top-right of map) */
+.homeBtn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 13px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(8, 14, 22, 0.82);
+  color: #cfe4ff;
+  font-size: 15px;
+  font-weight: 700;
+  min-height: 34px;
+  cursor: pointer;
+}
+.homeBtn:hover {
+  background: rgba(20, 30, 46, 0.9);
+}
+
+/* Compact radar animation scrubber (bottom-center of map) */
+.radarBar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 10px;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 300px;
+  max-width: 64%;
+  padding: 4px 10px 4px 5px;
+  border-radius: 16px;
+  background: rgba(6, 11, 18, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.radarPlay {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: #2f6dd0;
+  color: #fff;
+  font-size: 9px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radarTrack {
+  position: relative;
+  flex: 1;
+  height: 12px;
+}
+.radarTrack::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 5px;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.16);
+}
+.radarFill {
+  position: absolute;
+  left: 0;
+  top: 5px;
+  height: 3px;
+  border-radius: 2px;
+  background: #4a9eff;
+}
+
+.radarTick {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 12px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+.radarTick::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 3px;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.28);
+}
+.radarTickActive::before {
+  background: #9fd0ff;
+}
+
+.radarHandle {
+  position: absolute;
+  top: 0;
+  transform: translate(-50%, 0);
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #4a9eff;
+  pointer-events: none;
+}
+
+.radarNow {
+  flex-shrink: 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #eaf3ff;
+  min-width: 90px;
+  text-align: right;
+}
+
+/* OpenWeatherMap layer color scale (bottom-right) */
+.wxScale {
+  position: absolute;
+  right: 8px;
+  bottom: 10px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(8, 14, 22, 0.74);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+}
+.wxScaleRow {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.wxScaleLabel {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.8);
+}
+.wxScaleBar {
+  width: 160px;
+  height: 10px;
+  border-radius: 4px;
+}
+.wxScaleTicks {
+  display: flex;
+  justify-content: space-between;
+}
+.wxScaleTicks em {
+  font-size: 14px;
+  font-style: normal;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Leaflet zoom control — enlarged for touchscreen, bottom-right */
+:global(.leaflet-control-zoom) {
+  border: none !important;
+  box-shadow: none !important;
+}
+:global(.leaflet-control-zoom-in),
+:global(.leaflet-control-zoom-out) {
+  width: 64px !important;
+  height: 64px !important;
+  line-height: 64px !important;
+  font-size: 36px !important;
+  border-radius: 12px !important;
+  background: rgba(8, 14, 22, 0.82) !important;
+  color: #cfe4ff !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  font-weight: 700 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+:global(.leaflet-control-zoom-in) {
+  margin-bottom: 6px !important;
+  border-radius: 12px !important;
+}
+:global(.leaflet-control-zoom-out) {
+  border-radius: 12px !important;
+}
+:global(.leaflet-control-zoom-in:hover),
+:global(.leaflet-control-zoom-out:hover) {
+  background: rgba(20, 30, 46, 0.95) !important;
+  color: #fff !important;
+}
+
+/* Origin/destination airport code labels on the route line */
+:global(.leaflet-tooltip.route-ap) {
+  background: rgba(8, 14, 22, 0.85);
+  border: 1px solid rgba(111, 192, 255, 0.5);
+  color: #bfe0ff;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  box-shadow: none;
+}
+:global(.leaflet-tooltip.route-ap::before) {
+  display: none;
+}

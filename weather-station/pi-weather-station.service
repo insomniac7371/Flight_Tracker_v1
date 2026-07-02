@@ -1,0 +1,24 @@
+[Unit]
+Description=Pi Weather Station (flight + weather kiosk)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=flightrack
+WorkingDirectory=/home/flightrack/Dad-Flight-Tracker/weather-station
+ExecStart=/usr/bin/node server/index.js
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=pi-weather-station
+
+# Tighten the service — prevents privilege escalation and protects system dirs.
+# /home is intentionally not restricted so settings.json can be read/written.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+
+[Install]
+WantedBy=multi-user.target

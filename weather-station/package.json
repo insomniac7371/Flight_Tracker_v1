@@ -1,0 +1,25 @@
+{
+  "name": "dad-flight-tracker",
+  "version": "1.0.0",
+  "description": "Flight + weather kiosk for the Raspberry Pi 7 inch touchscreen",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./server/index.js"
+  },
+  "author": "Eric Lewin",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.18.1",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "helmet": "^8.2.0",
+    "open": "^7.1.0",
+    "ws": "^8.21.0"
+  },
+  "devDependencies": {
+    "connect-livereload": "^0.6.1",
+    "livereload": "^0.9.1"
+  }
+}

@@ -1,0 +1,28 @@
+.date{
+    display: flex;
+    justify-content: flex-end;
+    font-size: 30px;
+}
+
+.time-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.time {
+  font-size: 72px;
+  line-height: 1;
+}
+
+.ampm {
+  font-size: 28px;
+  opacity: 0.75;
+  padding-bottom: 8px;
+}
+
+.sun-rise-set-container{
+    display: flex;
+    justify-content: flex-end;
+}

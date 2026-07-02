@@ -1,0 +1,5 @@
+{
+  "_comment": "Copy this file to data/opensky.json and fill in your OpenSky API client credentials. Get them from opensky-network.org > Account > API Clients (create a client to receive a clientId and clientSecret). data/ is gitignored, so your secret stays on the device and is never committed. Alternatively, set the OPENSKY_CLIENT_ID and OPENSKY_CLIENT_SECRET environment variables instead of using this file.",
+  "clientId": "",
+  "clientSecret": ""
+}

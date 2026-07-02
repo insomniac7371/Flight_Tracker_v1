@@ -1,0 +1,100 @@
+.banner {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4000;
+  max-width: 94%;
+  animation: dropIn 0.35s ease;
+}
+
+@keyframes dropIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -16px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* LED dot-matrix look */
+.led {
+  display: flex;
+  align-items: stretch;
+  gap: 18px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background-color: #050608;
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.05) 0.5px,
+    transparent 0.6px
+  );
+  background-size: 3px 3px;
+  border: 1px solid rgba(120, 200, 255, 0.25);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  font-family: "Consolas", "Menlo", monospace;
+  color: #eaf6ff;
+  text-shadow: 0 0 6px rgba(130, 200, 255, 0.5);
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.tag {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: #ffcf3f;
+  text-shadow: 0 0 6px rgba(255, 207, 63, 0.6);
+}
+.airline {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #d8ecff;
+}
+.route {
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  color: #79c0ff;
+}
+.type {
+  font-size: 13px;
+  color: #bcd6ef;
+}
+.ap {
+  font-size: 12px;
+  color: #8fb4d6;
+}
+
+.right {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-auto-rows: min-content;
+  gap: 2px 16px;
+  align-content: center;
+  border-left: 1px solid rgba(120, 200, 255, 0.18);
+  padding-left: 16px;
+}
+.right > div {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  white-space: nowrap;
+}
+.right span {
+  font-size: 11px;
+  color: #6f93b6;
+  width: 26px;
+}
+.right b {
+  font-size: 14px;
+  font-weight: 700;
+  color: #eaf6ff;
+}

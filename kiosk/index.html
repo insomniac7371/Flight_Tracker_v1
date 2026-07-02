@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Dad Kiosk — Flight &amp; Weather</title>
+  <style>
+    :root {
+      --bar-h: 46px;
+      --accent: #4a9eff;
+      --bg: #0a0e16;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; width: 100%; overflow: hidden; background: var(--bg); }
+    body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; color: #e9f0fb; }
+
+    #stage { position: absolute; inset: 0 0 var(--bar-h) 0; }
+
+    .pane {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      border: 0;
+      opacity: 0; pointer-events: none;
+      transition: opacity 140ms ease;
+    }
+    .pane.active { opacity: 1; pointer-events: auto; }
+
+    /* Placeholder shown until the dump1090 feeder is reachable */
+    #flightWaiting {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 10px; text-align: center; padding: 24px;
+      background: radial-gradient(120% 90% at 50% 30%, #12203a 0%, #0a0e16 70%);
+    }
+    #flightWaiting.hidden { display: none; }
+    #flightWaiting .ico { font-size: 40px; opacity: .85; }
+    #flightWaiting h2 { font-size: 17px; font-weight: 700; letter-spacing: .02em; }
+    #flightWaiting p { font-size: 12px; line-height: 1.5; color: #8fa6c4; max-width: 360px; }
+    #flightWaiting code { color: var(--accent); background: rgba(74,158,255,.12); padding: 1px 6px; border-radius: 5px; }
+    .dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:#f0b429; margin-right:6px; vertical-align:middle; }
+    .dot.up { background:#49f49c; }
+
+    /* Bottom tab bar */
+    #tabs {
+      position: absolute; left: 0; right: 0; bottom: 0; height: var(--bar-h);
+      display: flex; background: #070a11; border-top: 1px solid rgba(255,255,255,.08);
+    }
+    #tabs button {
+      flex: 1; border: 0; background: transparent; color: #7d93b2;
+      font-size: 13px; font-weight: 800; letter-spacing: .08em;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      cursor: pointer;
+    }
+    #tabs button .glyph { font-size: 16px; }
+    #tabs button.active { color: #fff; }
+    #tabs button.active::after {
+      content: ""; position: absolute; bottom: 0; height: 3px; width: 38%;
+      background: var(--accent); border-radius: 3px 3px 0 0;
+    }
+    #tabs button { position: relative; }
+    #tabs .sep { width: 1px; background: rgba(255,255,255,.08); }
+  </style>
+</head>
+<body>
+  <!-- =========================================================
+       CONFIG — edit these two URLs if your ports/paths differ.
+       FLIGHT_URL: the local dump1090 / SkyAware map served by the
+                   FR24 feeder (default :8080). On dump1090-fa it may
+                   be http://localhost:8080/skyaware/ instead.
+       WEATHER_URL: the weather-station Node app (now on :8081).
+       ========================================================= -->
+  <div id="stage">
+    <iframe id="weatherFrame" class="pane" title="Weather"></iframe>
+    <iframe id="flightFrame"  class="pane" title="Flight radar"></iframe>
+    <div id="flightWaiting">
+      <div class="ico">📡</div>
+      <h2>Waiting for the flight feeder</h2>
+      <p>
+        <span id="feedDot" class="dot"></span>
+        No local <strong>dump1090</strong> map found at <code id="flightUrlLabel"></code>.
+        Plug in your SDR and start the FR24 feeder — this pane fills in automatically once it's live.
+      </p>
+    </div>
+  </div>
+
+  <nav id="tabs">
+    <button id="tabFlight" data-pane="flight"><span class="glyph">✈</span> FLIGHT</button>
+    <div class="sep"></div>
+    <button id="tabWeather" data-pane="weather"><span class="glyph">☀</span> WEATHER</button>
+  </nav>
+
+  <script>
+    const FLIGHT_URL  = "http://localhost:8080/";
+    const WEATHER_URL = "http://localhost:8081/";
+    const START_PANE  = "weather"; // which pane shows first
+
+    const flightFrame = document.getElementById("flightFrame");
+    const weatherFrame = document.getElementById("weatherFrame");
+    const waiting = document.getElementById("flightWaiting");
+    const feedDot = document.getElementById("feedDot");
+    document.getElementById("flightUrlLabel").textContent = FLIGHT_URL;
+
+    // Weather is ours and always up — load it immediately so it stays live.
+    weatherFrame.src = WEATHER_URL;
+
+    let flightLoaded = false;
+
+    // Poll the feeder; only mount its iframe once reachable so we never show
+    // the browser's "connection refused" page. Keeps the placeholder until then.
+    async function checkFeeder() {
+      let up = false;
+      try {
+        await fetch(FLIGHT_URL, { mode: "no-cors", cache: "no-store" });
+        up = true; // opaque resolve => something is listening
+      } catch (e) {
+        up = false;
+      }
+      feedDot.classList.toggle("up", up);
+      if (up && !flightLoaded) {
+        flightFrame.src = FLIGHT_URL;
+        flightLoaded = true;
+      }
+      if (up && flightLoaded) {
+        waiting.classList.add("hidden");
+      } else {
+        waiting.classList.remove("hidden");
+      }
+    }
+    checkFeeder();
+    setInterval(checkFeeder, 5000);
+
+    // Tab switching — both iframes stay mounted/live, we just swap visibility.
+    function show(pane) {
+      const isFlight = pane === "flight";
+      flightFrame.classList.toggle("active", isFlight);
+      waiting.style.display = isFlight ? "" : "none";
+      weatherFrame.classList.toggle("active", !isFlight);
+      document.getElementById("tabFlight").classList.toggle("active", isFlight);
+      document.getElementById("tabWeather").classList.toggle("active", !isFlight);
+    }
+    document.getElementById("tabFlight").addEventListener("click", () => show("flight"));
+    document.getElementById("tabWeather").addEventListener("click", () => show("weather"));
+    show(START_PANE);
+  </script>
+</body>
+</html>

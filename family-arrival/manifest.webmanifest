@@ -1,0 +1,9 @@
+{
+  "name": "Family Arrival Coordinator",
+  "short_name": "Arrival",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#0f172a",
+  "icons": []
+}
