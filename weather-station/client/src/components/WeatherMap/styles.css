@@ -41,15 +41,15 @@
 
 .acBadge {
   position: absolute;
-  top: 52px;
+  top: 44px;
   left: 10px;
   z-index: 1000;
-  padding: 7px 14px;
-  border-radius: 16px;
+  padding: 5px 11px;
+  border-radius: 14px;
   background: rgba(8, 14, 22, 0.82);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: #cfe4ff;
-  font-size: 20px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.02em;
   pointer-events: none;
@@ -71,7 +71,7 @@
   position: absolute;
   top: 10px;
   left: 10px;
-  right: 70px; /* clear the home button */
+  right: 56px; /* clear the home button */
   z-index: 1000;
   display: flex;
   flex-wrap: nowrap;
@@ -85,16 +85,16 @@
 }
 
 .wxChip {
-  padding: 6px 13px;
-  border-radius: 16px;
+  padding: 4px 10px;
+  border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(8, 14, 22, 0.78);
   color: rgba(255, 255, 255, 0.62);
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.02em;
   cursor: pointer;
-  min-height: 34px;
+  min-height: 27px;
   display: inline-flex;
   align-items: center;
 }
@@ -239,14 +239,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 13px;
-  border-radius: 16px;
+  padding: 4px 10px;
+  border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(8, 14, 22, 0.82);
   color: #cfe4ff;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
-  min-height: 34px;
+  min-height: 27px;
   cursor: pointer;
 }
 .homeBtn:hover {
@@ -350,11 +350,11 @@
 
 .radarNow {
   flex-shrink: 0;
-  font-size: 22px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.02em;
   color: #eaf3ff;
-  min-width: 90px;
+  min-width: 62px;
   text-align: right;
 }
 
@@ -406,10 +406,10 @@
 }
 :global(.leaflet-control-zoom-in),
 :global(.leaflet-control-zoom-out) {
-  width: 64px !important;
-  height: 64px !important;
-  line-height: 64px !important;
-  font-size: 36px !important;
+  width: 46px !important;
+  height: 46px !important;
+  line-height: 46px !important;
+  font-size: 26px !important;
   border-radius: 12px !important;
   background: rgba(8, 14, 22, 0.82) !important;
   color: #cfe4ff !important;
