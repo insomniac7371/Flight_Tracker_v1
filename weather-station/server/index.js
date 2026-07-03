@@ -14,7 +14,9 @@ const vesselCtrl = require("./vesselCtrl");
 const wxPointsCtrl = require("./wxPointsCtrl");
 const extraCtrl = require("./extraCtrl");
 const lightningCtrl = require("./lightningCtrl");
+const weatherCtrl = require("./weatherCtrl");
 const updateCtrl = require("./updateCtrl");
+const wifiCtrl = require("./wifiCtrl");
 
 const {
   getSettings,
@@ -107,6 +109,8 @@ app.get("/api/vessels", vesselCtrl.getVessels);
 
 app.get("/api/wx-points", wxPointsCtrl.getWxPoints);
 
+app.get("/api/weather", weatherCtrl.getWeather);
+
 app.get("/api/alerts", extraCtrl.getAlerts);
 app.get("/api/aqi", extraCtrl.getAqi);
 app.get("/api/health", extraCtrl.getHealth);
@@ -115,3 +119,8 @@ app.get("/api/lightning", lightningCtrl.getStrikes);
 
 app.get("/api/version", updateCtrl.getVersion);
 app.post("/api/update", updateCtrl.checkUpdate);
+
+app.get("/api/wifi/status", wifiCtrl.getStatus);
+app.get("/api/wifi/scan", wifiCtrl.scan);
+app.post("/api/wifi/connect", wifiCtrl.connect);
+app.post("/api/wifi/forget", wifiCtrl.forget);

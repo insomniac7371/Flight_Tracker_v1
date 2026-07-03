@@ -108,7 +108,6 @@ const WeatherMap = ({ zoom, dark }) => {
     showSatellite,
     toggleSatellite,
     showLightning,
-    toggleLightning,
     aisApiKey,
     getAisApiKey,
     setOverheadAircraft,
@@ -624,14 +623,6 @@ const WeatherMap = ({ zoom, dark }) => {
           ) : null}
         </button>
       ))}
-      <button
-        type="button"
-        className={`${styles.wxChip} ${showLightning ? styles.wxChipOn : ""}`}
-        onClick={() => toggleLightning()}
-        title="Toggle live lightning strikes (Blitzortung)"
-      >
-        ⚡ Lightning
-      </button>
       {!owmApiKey ? (
         <span className={styles.wxHint}>add OWM key in settings</span>
       ) : null}

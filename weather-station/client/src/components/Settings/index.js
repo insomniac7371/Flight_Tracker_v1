@@ -4,6 +4,7 @@ import styles from "./styles.css";
 import { AppContext } from "~/AppContext";
 import { CSSTransition } from "react-transition-group";
 import FlightSearch from "~/components/FlightSearch";
+import WifiPanel from "~/components/WifiPanel";
 import { InlineIcon } from "@iconify/react";
 import closeFilled from "@iconify/icons-carbon/close-filled";
 import roundSaveAlt from "@iconify/icons-ic/round-save-alt";
@@ -134,6 +135,7 @@ const Settings = () => {
               cb={setLon}
               current={currentLon}
             />
+            <WifiPanel open={settingsMenuOpen} />
           </div>
           <div className={styles.col}>
             <div className={styles.keysToggle} onClick={() => setKeysOpen((o) => !o)}>
@@ -256,8 +258,15 @@ DataHealth.propTypes = {
  * @param {Boolean} props.open whether the settings menu is open
  * @returns {JSX.Element} Update panel
  */
+const DIM_CHOICES = [0, 1, 5, 15, 30]; // minutes; 0 = never
+
 const UpdatePanel = ({ open }) => {
-  const { showSourceBadge, saveShowSourceBadge } = useContext(AppContext);
+  const {
+    showSourceBadge,
+    saveShowSourceBadge,
+    dimTimeoutMin,
+    saveDimTimeoutMin,
+  } = useContext(AppContext);
   const [info, setInfo] = useState(null);
   const [status, setStatus] = useState(null); // null | checking | current | updating | error
   const [errMsg, setErrMsg] = useState(null);
@@ -375,6 +384,22 @@ const UpdatePanel = ({ open }) => {
           button2Val={false}
           cb={saveShowSourceBadge}
         />
+      </div>
+      <div className={styles.updateRow}>
+        <span className={styles.updateVersion}>SCREEN DIM AFTER</span>
+        <div className={styles.dimRow}>
+          {DIM_CHOICES.map((m) => (
+            <div
+              key={m}
+              className={`${styles.button} ${styles.dimBtn} ${
+                dimTimeoutMin === m ? styles.down : ""
+              }`}
+              onClick={() => saveDimTimeoutMin(m)}
+            >
+              {m === 0 ? "OFF" : `${m}m`}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -1,35 +1,41 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { AppContext } from "~/AppContext";
 import styles from "./styles.css";
 
-// Dim the screen after 5 minutes of no touch/mouse input.
-// Any interaction wakes it back up immediately.
-const IDLE_MS = 5 * 60 * 1000;
-
 /**
+ * Dim the screen after a period of no touch/mouse input. The timeout is
+ * user-configurable in Settings (dimTimeoutMin); 0 disables dimming.
+ * Any interaction wakes it back up immediately.
+ *
  * @returns {JSX.Element|null} full-screen dim overlay when idle
  */
 const InactivityDim = () => {
+  const { dimTimeoutMin } = useContext(AppContext);
   const [dimmed, setDimmed] = useState(false);
   const timer = useRef(null);
 
   useEffect(() => {
+    setDimmed(false);
+    clearTimeout(timer.current);
+    if (!dimTimeoutMin) return undefined; // 0 = never dim
+
+    const idleMs = dimTimeoutMin * 60 * 1000;
     const wake = () => {
       setDimmed(false);
       clearTimeout(timer.current);
-      timer.current = setTimeout(() => setDimmed(true), IDLE_MS);
+      timer.current = setTimeout(() => setDimmed(true), idleMs);
     };
 
     const EVENTS = ["pointerdown", "pointermove", "keydown", "wheel"];
     EVENTS.forEach((ev) => window.addEventListener(ev, wake, { passive: true }));
 
-    // Start the initial timer.
-    timer.current = setTimeout(() => setDimmed(true), IDLE_MS);
+    timer.current = setTimeout(() => setDimmed(true), idleMs);
 
     return () => {
       clearTimeout(timer.current);
       EVENTS.forEach((ev) => window.removeEventListener(ev, wake));
     };
-  }, []);
+  }, [dimTimeoutMin]);
 
   if (!dimmed) return null;
 

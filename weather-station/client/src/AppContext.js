@@ -82,6 +82,22 @@ export function AppContextProvider({ children }) {
     window.localStorage.setItem("showSourceBadge", newVal ? "1" : "0");
   }
 
+  // Screen dim timeout in minutes; 0 disables dimming entirely.
+  const [dimTimeoutMin, setDimTimeoutMin] = useState(() => {
+    const v = parseInt(window.localStorage.getItem("dimTimeoutMin"), 10);
+    return Number.isNaN(v) ? 5 : v;
+  });
+
+  /**
+   * Save screen dim timeout
+   *
+   * @param {Number} newVal minutes; 0 = never dim
+   */
+  function saveDimTimeoutMin(newVal) {
+    setDimTimeoutMin(newVal);
+    window.localStorage.setItem("dimTimeoutMin", String(newVal));
+  }
+
   /**
    * Save mouse hide state
    *
@@ -366,16 +382,6 @@ export function AppContextProvider({ children }) {
     setHourlyWeatherDataErr(null);
     setHourlyWeatherDataErrMsg(null);
     const { latitude, longitude } = coords;
-    const fields = [
-      "temperature",
-      "precipitationProbability",
-      "precipitationIntensity",
-      "windSpeed",
-    ].join("%2c");
-
-    const endTime = new Date(
-      new Date().getTime() + 60 * 60 * 23 * 1000
-    ).toISOString();
 
     return new Promise((resolve, reject) => {
       if (!coords) {
@@ -389,9 +395,7 @@ export function AppContextProvider({ children }) {
       }
 
       axios
-        .get(
-          `https://api.tomorrow.io/v4/timelines?location=${latitude}%2C${longitude}&fields=${fields}&timesteps=1h&apikey=${weatherApiKey}&endTime=${endTime}`
-        )
+        .get(`/api/weather?type=hourly&lat=${latitude}&lon=${longitude}`)
         .then((res) => {
           if (!res) {
             return reject({ message: "No response" });
@@ -424,16 +428,6 @@ export function AppContextProvider({ children }) {
     setDailyWeatherDataErr(null);
     setDailyWeatherDataErrMsg(null);
     const { latitude, longitude } = coords;
-    const fields = [
-      "temperature",
-      "precipitationProbability",
-      "precipitationIntensity",
-      "windSpeed",
-    ].join("%2c");
-
-    const endTime = new Date(
-      new Date().getTime() + 4 * 60 * 60 * 24 * 1000
-    ).toISOString();
 
     return new Promise((resolve, reject) => {
       if (!coords) {
@@ -446,9 +440,7 @@ export function AppContextProvider({ children }) {
         return reject("Missing weather API key");
       }
       axios
-        .get(
-          `https://api.tomorrow.io/v4/timelines?location=${latitude}%2C${longitude}&fields=${fields}&timesteps=1d&apikey=${weatherApiKey}&endTime=${endTime}`
-        )
+        .get(`/api/weather?type=daily&lat=${latitude}&lon=${longitude}`)
         .then((res) => {
           if (!res) {
             return reject({ message: "No response" });
@@ -514,19 +506,6 @@ export function AppContextProvider({ children }) {
     setCurrentWeatherDataErrMsg(null);
     const { latitude, longitude } = coords;
 
-    const fields = [
-      "temperature",
-      "temperatureApparent",
-      "humidity",
-      "windSpeed",
-      "windDirection",
-      "pressureSurfaceLevel",
-      "precipitationIntensity",
-      "precipitationType",
-      "precipitationProbability",
-      "cloudCover",
-      "weatherCode",
-    ].join("%2c");
     return new Promise((resolve, reject) => {
       if (!coords) {
         setCurrentWeatherDataErr(true);
@@ -539,9 +518,7 @@ export function AppContextProvider({ children }) {
       }
 
       axios
-        .get(
-          `https://api.tomorrow.io/v4/timelines?location=${latitude}%2C${longitude}&fields=${fields}&timesteps=current&apikey=${weatherApiKey}`
-        )
+        .get(`/api/weather?type=current&lat=${latitude}&lon=${longitude}`)
         .then((res) => {
           if (!res) {
             return reject({ message: "No response" });
@@ -762,6 +739,8 @@ export function AppContextProvider({ children }) {
     sunsetTime,
     showSourceBadge,
     saveShowSourceBadge,
+    dimTimeoutMin,
+    saveDimTimeoutMin,
   };
 
   return (
