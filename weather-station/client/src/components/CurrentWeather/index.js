@@ -18,6 +18,7 @@ import cloudIcon from "@iconify/icons-wi/cloud";
 import strongWind from "@iconify/icons-wi/strong-wind";
 import snowIcon from "@iconify/icons-ion/snow";
 import rainIcon from "@iconify/icons-wi/rain";
+import raindropIcon from "@iconify/icons-wi/raindrop";
 import rainMix from "@iconify/icons-wi/rain-mix";
 import thunderstormIcon from "@iconify/icons-wi/thunderstorm";
 import fogIcon from "@iconify/icons-wi/fog";
@@ -63,6 +64,7 @@ const CurrentWeather = () => {
     windSpeed,
     windDirection,
     pressureSurfaceLevel,
+    dewPoint,
   } = weatherData;
 
   const daylight =
@@ -139,6 +141,17 @@ const CurrentWeather = () => {
               {Math.round(pressureSurfaceLevel)}
             </div>
             <div className={styles.statLabel}>hPa</div>
+          </div>
+        ) : null}
+        {dewPoint != null ? (
+          <div className={styles.statCell}>
+            <span className={styles.statIcon}>
+              <InlineIcon icon={raindropIcon} />
+            </span>
+            <div className={styles.statValue}>
+              {convertTemp(dewPoint, tempUnit)}&deg;
+            </div>
+            <div className={styles.statLabel}>Dew Pt</div>
           </div>
         ) : null}
       </div>

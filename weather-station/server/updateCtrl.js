@@ -74,4 +74,18 @@ async function checkUpdate(req, res) {
   });
 }
 
-module.exports = { getVersion, checkUpdate };
+/**
+ * POST /api/reboot — reboot the kiosk. Only ever called after the user
+ * explicitly taps "Reboot now" in the UI. Plain systemctl: polkit
+ * authorizes it, and it works under NoNewPrivileges (sudo would not).
+ */
+function reboot(req, res) {
+  res.json({ ok: true });
+  setTimeout(() => {
+    execFile("systemctl", ["reboot"], (err) => {
+      if (err) console.error("reboot failed:", err.message);
+    });
+  }, 300);
+}
+
+module.exports = { getVersion, checkUpdate, reboot };

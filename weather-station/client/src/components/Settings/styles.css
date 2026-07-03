@@ -240,6 +240,12 @@
   border-radius: 8px;
   white-space: nowrap;
 }
+.reboot-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
 .dim-row {
   display: flex;
 }

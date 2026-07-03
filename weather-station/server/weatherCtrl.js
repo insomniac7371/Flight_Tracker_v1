@@ -29,6 +29,7 @@ const TYPES = {
       "precipitationProbability",
       "cloudCover",
       "weatherCode",
+      "dewPoint",
     ],
   },
   hourly: {

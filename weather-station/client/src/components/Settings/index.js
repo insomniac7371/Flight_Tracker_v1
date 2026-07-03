@@ -300,7 +300,8 @@ const UpdatePanel = ({ open }) => {
         if (d.updating) {
           setStatus("updating");
           // The server restarts itself mid-update. Poll until it comes back
-          // with a new commit hash, then hard-reload to pick up the new bundle.
+          // with a new commit, then ask the user how to finish — never
+          // reboot without permission.
           const oldCommit = info && info.commit;
           const poll = setInterval(() => {
             axios
@@ -308,7 +309,8 @@ const UpdatePanel = ({ open }) => {
               .then((r) => {
                 if (r.data && r.data.commit && r.data.commit !== oldCommit) {
                   clearInterval(poll);
-                  window.location.reload();
+                  setInfo(r.data);
+                  setStatus("done");
                 }
               })
               .catch(() => { /* server restarting — keep polling */ });
@@ -351,8 +353,33 @@ const UpdatePanel = ({ open }) => {
       ) : null}
       {status === "updating" ? (
         <div className={styles.updateStatus}>
-          Installing update — the app will reload automatically…
+          Installing update…
         </div>
+      ) : null}
+      {status === "done" ? (
+        <div className={styles.updateStatus}>
+          ✓ Update installed. Reboot for a fresh start, or keep using the app.
+          <div className={styles.rebootRow}>
+            <div
+              className={`${styles.button} ${styles.updateBtn}`}
+              onClick={() => {
+                setStatus("rebooting");
+                axios.post("/api/reboot").catch(() => { /* going down anyway */ });
+              }}
+            >
+              Reboot now
+            </div>
+            <div
+              className={`${styles.button} ${styles.updateBtn}`}
+              onClick={() => window.location.reload()}
+            >
+              Later
+            </div>
+          </div>
+        </div>
+      ) : null}
+      {status === "rebooting" ? (
+        <div className={styles.updateStatus}>Rebooting…</div>
       ) : null}
       {status === "error" ? (
         <div className={`${styles.updateStatus} ${styles.updateError}`}>

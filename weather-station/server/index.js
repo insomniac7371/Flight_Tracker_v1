@@ -119,6 +119,7 @@ app.get("/api/lightning", lightningCtrl.getStrikes);
 
 app.get("/api/version", updateCtrl.getVersion);
 app.post("/api/update", updateCtrl.checkUpdate);
+app.post("/api/reboot", updateCtrl.reboot);
 
 app.get("/api/wifi/status", wifiCtrl.getStatus);
 app.get("/api/wifi/scan", wifiCtrl.scan);
