@@ -7,7 +7,10 @@
   overflow: hidden;
   display: grid;
   grid-template-columns: auto 290px;
-  grid-template-rows: auto;
+  /* minmax(0,1fr) pins the row to the viewport height — with `auto`, tall
+     content inflates the row past 100vh and pushes the bottom controls
+     off-screen. */
+  grid-template-rows: minmax(0, 1fr);
   grid-template-areas: "map info";
   user-select: none;
   position: relative;
@@ -25,10 +28,13 @@
   grid-area: map;
   width: 100%;
   height: 100%;
+  min-height: 0;
+  min-width: 0;
 }
 
 .info-container {
   grid-area: info;
+  min-height: 0;
 }
 
 .dark .info-container {
