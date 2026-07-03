@@ -231,8 +231,42 @@ async function getTrack(req, res) {
 const infoCache = new Map(); // key "hex|callsign" -> { t, data }
 const INFO_TTL = 60 * 60 * 1000; // details are static-ish; cache 1h
 
+/**
+ * Fetch a PlaneSpotters photo by registration/tail number.
+ *
+ * @param {string} reg
+ * @returns {Promise<string|null>} thumbnail URL or null
+ */
+async function planespottersByReg(reg) {
+  try {
+    const r = await fetchWithTimeout(
+      `https://api.planespotters.net/pub/photos/reg/${encodeURIComponent(reg)}`,
+      4000
+    );
+    if (r.ok) {
+      const j = await r.json();
+      const p = j && Array.isArray(j.photos) ? j.photos[0] : null;
+      if (p) {
+        return (
+          (p.thumbnail_large && p.thumbnail_large.src) ||
+          (p.thumbnail && p.thumbnail.src) ||
+          null
+        );
+      }
+    }
+  } catch (e) {
+    /* ignore */
+  }
+  return null;
+}
+
+// GA callsigns are usually the tail number itself (N602TA, C-GABC, G-ABCD).
+const TAIL_RE = /^(N[0-9]{1,5}[A-Z]{0,2}|[A-Z]{1,2}-[A-Z0-9]{1,5})$/;
+
 async function getAircraftInfo(req, res) {
-  const hex = String(req.query.hex || "").trim().toLowerCase();
+  // Strip non-hex chars — MLAT/TIS-B feeds prefix hexes with "~", which
+  // breaks every downstream lookup.
+  const hex = String(req.query.hex || "").trim().toLowerCase().replace(/[^0-9a-f]/g, "");
   const callsign = String(req.query.callsign || "").trim().toUpperCase();
   const cacheKey = `${hex}|${callsign}`;
 
@@ -288,24 +322,29 @@ async function getAircraftInfo(req, res) {
       }
     }
 
-    // Last resort: some aircraft (esp. GA/military) are indexed by tail number
-    // on PlaneSpotters but not by hex — try the registration if we have one.
+    // Some aircraft (esp. GA/military) are indexed by tail number on
+    // PlaneSpotters but not by hex — try the registration if we have one.
     if (!out.photo && out.aircraft && out.aircraft.registration) {
+      out.photo = await planespottersByReg(out.aircraft.registration);
+    }
+
+    // GA planes often have no adsbdb record at all, but their callsign IS
+    // the tail number — search PlaneSpotters by that.
+    if (!out.photo && callsign && TAIL_RE.test(callsign)) {
+      out.photo = await planespottersByReg(callsign);
+    }
+
+    // Final fallback: airport-data.com indexes many GA airframes by hex.
+    if (!out.photo) {
       try {
-        const reg = encodeURIComponent(out.aircraft.registration);
         const r = await fetchWithTimeout(
-          `https://api.planespotters.net/pub/photos/reg/${reg}`,
+          `https://airport-data.com/api/ac_thumb.json?m=${hex}&n=1`,
           4000
         );
         if (r.ok) {
           const j = await r.json();
-          const p = j && Array.isArray(j.photos) ? j.photos[0] : null;
-          if (p) {
-            out.photo =
-              (p.thumbnail_large && p.thumbnail_large.src) ||
-              (p.thumbnail && p.thumbnail.src) ||
-              null;
-          }
+          const d = j && Array.isArray(j.data) ? j.data[0] : null;
+          if (d && d.image) out.photo = d.image;
         }
       } catch (e) {
         /* ignore */

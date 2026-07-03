@@ -11,6 +11,9 @@ import styles from "./styles.css";
 const OverheadBanner = () => {
   const { overheadAircraft } = useContext(AppContext);
   const [info, setInfo] = useState(null);
+  // Tapping the banner dismisses it for this aircraft; a different plane
+  // passing overhead shows it again.
+  const [dismissedId, setDismissedId] = useState(null);
 
   const hex = overheadAircraft && overheadAircraft.id;
   useEffect(() => {
@@ -38,6 +41,7 @@ const OverheadBanner = () => {
   }, [hex]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!overheadAircraft) return null;
+  if (dismissedId && dismissedId === overheadAircraft.id) return null;
 
   const ac = info && info.aircraft;
   const route = info && info.route;
@@ -58,7 +62,10 @@ const OverheadBanner = () => {
       : `${overheadAircraft.vertRate > 0 ? "+" : ""}${overheadAircraft.vertRate} fpm`;
 
   return (
-    <div className={styles.banner}>
+    <div
+      className={styles.banner}
+      onClick={() => setDismissedId(overheadAircraft.id)}
+    >
       <div className={styles.led}>
         <div className={styles.left}>
           <div className={styles.tag}>● OVERHEAD</div>
