@@ -67,6 +67,20 @@ export function AppContextProvider({ children }) {
   const [mouseHide, setMouseHide] = useState(false);
   const [sunriseTime, setSunriseTime] = useState(null);
   const [sunsetTime, setSunsetTime] = useState(null);
+  // Aircraft count/source badge on the map — hidden by default, toggle in Settings
+  const [showSourceBadge, setShowSourceBadge] = useState(
+    () => window.localStorage.getItem("showSourceBadge") === "1"
+  );
+
+  /**
+   * Save source badge visibility
+   *
+   * @param {Boolean} newVal
+   */
+  function saveShowSourceBadge(newVal) {
+    setShowSourceBadge(!!newVal);
+    window.localStorage.setItem("showSourceBadge", newVal ? "1" : "0");
+  }
 
   /**
    * Save mouse hide state
@@ -746,6 +760,8 @@ export function AppContextProvider({ children }) {
     updateSunriseSunset,
     sunriseTime,
     sunsetTime,
+    showSourceBadge,
+    saveShowSourceBadge,
   };
 
   return (

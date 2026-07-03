@@ -118,77 +118,81 @@ const Settings = () => {
           <InlineIcon icon={closeSharp} />
         </div>
         <div className={styles.settingsContainer}>
-          <FlightSearch />
-          <DataHealth open={settingsMenuOpen} />
-          <ToggleButtons />
-          <Input
-            label={"CUSTOM STARTING LATITUDE"}
-            val={lat}
-            cb={setLat}
-            current={currentLat}
-          />
-          <Input
-            label={"CUSTOM STARTING LONGITUDE"}
-            val={lon}
-            cb={setLon}
-            current={currentLon}
-          />
-          <div className={styles.keysToggle} onClick={() => setKeysOpen((o) => !o)}>
-            <span>🔑 API Keys</span>
-            <span className={styles.keysChevron}>{keysOpen ? "▲" : "▼"}</span>
+          <div className={styles.col}>
+            <FlightSearch />
+            <DataHealth open={settingsMenuOpen} />
+            <ToggleButtons />
+            <Input
+              label={"CUSTOM STARTING LATITUDE"}
+              val={lat}
+              cb={setLat}
+              current={currentLat}
+            />
+            <Input
+              label={"CUSTOM STARTING LONGITUDE"}
+              val={lon}
+              cb={setLon}
+              current={currentLon}
+            />
           </div>
-          {keysOpen ? (
-            <div className={styles.keysPanel}>
-              <Input
-                label={"WEATHER (Tomorrow.io)"}
-                val={weatherKey}
-                current={currentWeatherKey}
-                cb={setWeatherKey}
-                required={true}
-              />
-              <Input
-                label={"MAP LAYERS + AQI (OpenWeatherMap)"}
-                val={owmKey}
-                current={currentOwmKey}
-                cb={setOwmKey}
-              />
-              <Input
-                label={"SHIP TRAFFIC (aisstream.io)"}
-                val={aisKey}
-                current={currentAisKey}
-                cb={setAisKey}
-              />
-              <Input
-                label={"GEOLOCATION API KEY"}
-                val={geoKey}
-                current={currentGeoKey}
-                cb={setGeoKey}
-              />
+          <div className={styles.col}>
+            <div className={styles.keysToggle} onClick={() => setKeysOpen((o) => !o)}>
+              <span>🔑 API Keys</span>
+              <span className={styles.keysChevron}>{keysOpen ? "▲" : "▼"}</span>
             </div>
-          ) : null}
-          <UpdatePanel open={settingsMenuOpen} />
-          <div className={styles.bottomButtonContainer}>
-            <div>
-              <div className={styles.label}>HIDE MOUSE</div>
-              <ToggleButton
-                button1Label={"ON"}
-                button2Label={"OFF"}
-                val={mouseHide}
-                button1Val={true}
-                button2Val={false}
-                cb={saveMouseHide}
-              />
-            </div>
-            <div className={styles.saveButtonContainer}>
-              <SaveButton
-                mapsKey={mapsKey}
-                weatherKey={weatherKey}
-                geoKey={geoKey}
-                owmKey={owmKey}
-                aisKey={aisKey}
-                lat={lat}
-                lon={lon}
-              />
+            {keysOpen ? (
+              <div className={styles.keysPanel}>
+                <Input
+                  label={"WEATHER (Tomorrow.io)"}
+                  val={weatherKey}
+                  current={currentWeatherKey}
+                  cb={setWeatherKey}
+                  required={true}
+                />
+                <Input
+                  label={"MAP LAYERS + AQI (OpenWeatherMap)"}
+                  val={owmKey}
+                  current={currentOwmKey}
+                  cb={setOwmKey}
+                />
+                <Input
+                  label={"SHIP TRAFFIC (aisstream.io)"}
+                  val={aisKey}
+                  current={currentAisKey}
+                  cb={setAisKey}
+                />
+                <Input
+                  label={"GEOLOCATION API KEY"}
+                  val={geoKey}
+                  current={currentGeoKey}
+                  cb={setGeoKey}
+                />
+              </div>
+            ) : null}
+            <UpdatePanel open={settingsMenuOpen} />
+            <div className={styles.bottomButtonContainer}>
+              <div>
+                <div className={styles.label}>HIDE MOUSE</div>
+                <ToggleButton
+                  button1Label={"ON"}
+                  button2Label={"OFF"}
+                  val={mouseHide}
+                  button1Val={true}
+                  button2Val={false}
+                  cb={saveMouseHide}
+                />
+              </div>
+              <div className={styles.saveButtonContainer}>
+                <SaveButton
+                  mapsKey={mapsKey}
+                  weatherKey={weatherKey}
+                  geoKey={geoKey}
+                  owmKey={owmKey}
+                  aisKey={aisKey}
+                  lat={lat}
+                  lon={lon}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -253,6 +257,7 @@ DataHealth.propTypes = {
  * @returns {JSX.Element} Update panel
  */
 const UpdatePanel = ({ open }) => {
+  const { showSourceBadge, saveShowSourceBadge } = useContext(AppContext);
   const [info, setInfo] = useState(null);
   const [status, setStatus] = useState(null); // null | checking | current | updating | error
   const [errMsg, setErrMsg] = useState(null);
@@ -356,6 +361,19 @@ const UpdatePanel = ({ open }) => {
           button1Val={true}
           button2Val={false}
           cb={saveFlightTab}
+        />
+      </div>
+      <div className={styles.updateRow}>
+        <span className={styles.updateVersion}>
+          FLIGHT COUNT / SOURCE BADGE
+        </span>
+        <ToggleButton
+          button1Label={"ON"}
+          button2Label={"OFF"}
+          val={showSourceBadge}
+          button1Val={true}
+          button2Val={false}
+          cb={saveShowSourceBadge}
         />
       </div>
     </div>

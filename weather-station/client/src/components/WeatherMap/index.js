@@ -100,6 +100,7 @@ const WeatherMap = ({ zoom, dark }) => {
     toggleAnimateWeatherMap,
     showAircraft,
     toggleAircraft,
+    showSourceBadge,
     showAirports,
     toggleAirports,
     showVessels,
@@ -569,7 +570,7 @@ const WeatherMap = ({ zoom, dark }) => {
     >
       ⌂
     </button>
-    {showAircraft ? (
+    {showAircraft && showSourceBadge ? (
       <div className={styles.acBadge}>
         {`✈ ${aircraft.length}`}
         {aircraftSource ? ` · ${aircraftSource}` : ""}

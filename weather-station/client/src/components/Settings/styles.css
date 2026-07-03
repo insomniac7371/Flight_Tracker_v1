@@ -1,13 +1,15 @@
 .container {
+  /* Full screen — two-column grid below fits everything at 800x480
+     with no scrolling. */
   height: calc(100vh - 20px); /* subtract padding */
-  width: calc(100vw - 310px); /* subtract 290px info panel + 20px padding */
-  background-color: rgba(0, 0, 0, 0.65);
+  width: calc(100vw - 20px);
+  background-color: rgba(0, 0, 0, 0.88);
   backdrop-filter: blur(3px);
   padding: 10px;
   color: #f6f6f4;
   font-family: "Rubik", sans-serif;
-  border-right: 1px solid rgba(0, 0, 0, 0.15);
   position: relative;
+  overflow: hidden;
 }
 
 .header {
@@ -15,8 +17,18 @@
 }
 
 .settings-container {
-  margin-top: 20px;
+  margin-top: 12px;
   font-size: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 24px;
+  align-items: start;
+  height: calc(100% - 32px); /* header + margin */
+  overflow-y: auto; /* fallback only — layout is sized to not need it */
+}
+
+.col {
+  min-width: 0;
 }
 
 .input-container {
@@ -81,7 +93,7 @@
 }
 
 .settings-item {
-  margin: 10px 0px;
+  margin: 6px 0px;
 }
 
 .toggle-container {
@@ -90,13 +102,11 @@
 
 .toggle-buttons {
   display: flex;
-  max-width: 900px;
-
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 .toggle-buttons > div {
-  margin-right: 10px;
+  margin-right: 8px;
 }
 
 .toggle-buttons > div:last-child {
@@ -104,7 +114,7 @@
 }
 
 .toggle-container > .button {
-  width: 50px;
+  width: 42px;
 }
 
 .bottom-button-container {
