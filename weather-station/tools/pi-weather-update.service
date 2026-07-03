@@ -6,4 +6,4 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 User=flightrack
-ExecStart=/home/flightrack/Dad-Flight-Tracker/weather-station/tools/auto-update.sh
+ExecStart=/bin/bash /home/flightrack/Dad-Flight-Tracker/weather-station/tools/auto-update.sh

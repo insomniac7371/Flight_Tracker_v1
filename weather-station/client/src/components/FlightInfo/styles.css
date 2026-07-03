@@ -60,7 +60,7 @@
 .photo {
   width: 100%;
   height: auto;
-  max-height: 98px;
+  max-height: 160px; /* card has the whole panel now that weather hides */
   object-fit: cover;
   display: block;
 }

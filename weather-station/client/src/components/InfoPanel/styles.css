@@ -41,6 +41,10 @@
   border-radius: 2px;
 }
 
+.hidden {
+  display: none;
+}
+
 .controls {
   grid-area: controls;  
   margin: -10px; /* subtract padding */  
