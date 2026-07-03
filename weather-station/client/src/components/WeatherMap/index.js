@@ -329,9 +329,15 @@ const WeatherMap = ({ zoom, dark }) => {
     const updateTimeStamps = () => {
       getMapTimestamps()
         .then((res) => {
-          // Keep the most recent ~10 radar frames — enough for a smooth loop.
-          const radar = (res && res.radar) || [];
-          setMapTimestamps(radar.slice(-10));
+          // Full history + forecast: RainViewer provides ~2h of past frames
+          // and up to 30 min of nowcast. Future frames are flagged so the
+          // scrubber can mark them and the idle position can rest at "now".
+          const past = (res && res.radar) || [];
+          const nowcast = ((res && res.nowcast) || []).map((f) => ({
+            ...f,
+            future: true,
+          }));
+          setMapTimestamps([...past, ...nowcast]);
         })
         .catch((err) => {
           console.log("err", err);
@@ -376,7 +382,10 @@ const WeatherMap = ({ zoom, dark }) => {
           clearInterval(interval);
         };
       } else {
-        setCurrentMapTimestampIdx(mapTimestamps.length - 1);
+        // Rest at "now" — the newest PAST frame, not the end of the forecast.
+        let idx = mapTimestamps.length - 1;
+        while (idx > 0 && mapTimestamps[idx].future) idx--;
+        setCurrentMapTimestampIdx(idx);
       }
     }
   }, [currentMapTimestampIdx, animateWeatherMap, mapTimestamps]);
@@ -666,7 +675,7 @@ const WeatherMap = ({ zoom, dark }) => {
               type="button"
               className={`${styles.radarTick} ${
                 i === currentMapTimestampIdx ? styles.radarTickActive : ""
-              }`}
+              } ${f.future ? styles.radarTickFuture : ""}`}
               style={{
                 left: `${(i / (mapTimestamps.length - 1)) * 100}%`,
               }}
@@ -682,7 +691,13 @@ const WeatherMap = ({ zoom, dark }) => {
             }}
           />
         </div>
-        <span className={styles.radarNow}>
+        <span
+          className={`${styles.radarNow} ${
+            mapTimestamps[currentMapTimestampIdx].future
+              ? styles.radarNowFuture
+              : ""
+          }`}
+        >
           {radarTimeLabel(mapTimestamps, currentMapTimestampIdx) === "now"
             ? "now"
             : fmtTime(
@@ -840,6 +855,7 @@ function airportIcon(f) {
 function radarTimeLabel(frames, idx) {
   if (!frames || !frames[idx] || !frames[idx].time) return null;
   const diffMin = Math.round(Date.now() / 1000 / 60 - frames[idx].time / 60);
+  if (diffMin < -1) return `+${-diffMin} min`; // forecast frame
   if (diffMin <= 1) return "now";
   if (diffMin < 60) return `-${diffMin} min`;
   const h = Math.floor(diffMin / 60);
@@ -909,6 +925,7 @@ function getMapTimestamps() {
         const d = res.data || {};
         resolve({
           radar: (d.radar && d.radar.past) || [],
+          nowcast: (d.radar && d.radar.nowcast) || [],
           satellite: (d.satellite && d.satellite.infrared) || [],
         });
       })

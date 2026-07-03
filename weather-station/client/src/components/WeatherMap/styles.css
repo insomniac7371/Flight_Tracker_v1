@@ -336,6 +336,14 @@
   background: #9fd0ff;
 }
 
+/* Forecast (nowcast) frames — amber to distinguish from history */
+.radarTickFuture::before {
+  background: rgba(255, 200, 80, 0.55);
+}
+.radarNowFuture {
+  color: #ffc850;
+}
+
 .radarHandle {
   position: absolute;
   top: 0;
