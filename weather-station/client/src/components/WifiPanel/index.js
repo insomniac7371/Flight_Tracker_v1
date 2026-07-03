@@ -49,6 +49,7 @@ const WifiPanel = ({ open }) => {
         const d = res.data || {};
         setAvailable(d.available !== false);
         setNetworks(d.networks || []);
+        if (d.error) setStatus({ ok: false, msg: d.error });
       })
       .catch(() => setNetworks([]))
       .finally(() => setScanning(false));
@@ -104,7 +105,16 @@ const WifiPanel = ({ open }) => {
       </div>
 
       {expanded ? (
-        <div className={styles.body}>
+        <div className={styles.overlay}>
+          <div className={styles.overlayHead}>
+            <span>📶 Wi-Fi Networks</span>
+            <span
+              className={styles.overlayClose}
+              onClick={() => setExpanded(false)}
+            >
+              ✕
+            </span>
+          </div>
           {!available ? (
             <div className={styles.note}>
               Wi-Fi control not available on this device.

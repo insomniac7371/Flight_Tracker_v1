@@ -1,7 +1,12 @@
 // Wi-Fi management via NetworkManager (nmcli) — scan, connect, status, forget.
-// Runs `sudo -n nmcli` because the server is a systemd service (no polkit
-// console session). Requires a sudoers rule scoped to nmcli only:
-//   flightrack ALL=(ALL) NOPASSWD: /usr/bin/nmcli
+// nmcli is invoked directly (NOT via sudo: the service runs with
+// NoNewPrivileges=true, which blocks setuid). NetworkManager authorizes the
+// service user through polkit — install this rule on the Pi:
+//   /etc/polkit-1/rules.d/50-flightrack-networkmanager.rules
+//   polkit.addRule(function(action, subject) {
+//     if (action.id.indexOf("org.freedesktop.NetworkManager.") === 0 &&
+//         subject.user == "flightrack") { return polkit.Result.YES; }
+//   });
 // All invocations use execFile with argument arrays — no shell, no injection.
 // Passwords are never logged.
 
@@ -17,8 +22,8 @@ const { execFile } = require("child_process");
 function nmcli(args, timeoutMs) {
   return new Promise((resolve) => {
     execFile(
-      "sudo",
-      ["-n", "nmcli", ...args],
+      "nmcli",
+      args,
       { timeout: timeoutMs || 20000 },
       (error, stdout, stderr) => {
         resolve({
@@ -78,7 +83,7 @@ function badSsid(ssid) {
  */
 async function getStatus(req, res) {
   const active = await nmcli(["-t", "-f", "ACTIVE,SSID,SIGNAL", "dev", "wifi"]);
-  if (!active.ok && /not found|command not found|ENOENT|a password is required/i.test(active.err)) {
+  if (!active.ok && /not found|command not found|ENOENT/i.test(active.err)) {
     return res.json({ available: false });
   }
   let connected = null;
@@ -109,7 +114,13 @@ async function scan(req, res) {
   );
   if (!r.ok) {
     console.error("wifi scan failed:", r.err.slice(0, 200));
-    return res.json({ available: false, networks: [] });
+    if (/not found|command not found|ENOENT/i.test(r.err)) {
+      return res.json({ available: false, networks: [] });
+    }
+    const error = /not authorized|permission denied/i.test(r.err)
+      ? "Not authorized — polkit rule missing (see setup guide)"
+      : "Scan failed — try again";
+    return res.json({ available: true, networks: [], error });
   }
   const byName = new Map();
   r.out.split("\n").forEach((line) => {
@@ -158,6 +169,8 @@ async function connect(req, res) {
     ? "Wrong password"
     : /no network with ssid|not found/i.test(r.err + r.out)
     ? "Network not found — try scanning again"
+    : /not authorized|permission denied/i.test(r.err + r.out)
+    ? "Not authorized — polkit rule missing (see setup guide)"
     : "Could not connect";
   console.error("wifi connect failed:", (r.err || r.out).slice(0, 200));
   res.json({ ok: false, error: msg });

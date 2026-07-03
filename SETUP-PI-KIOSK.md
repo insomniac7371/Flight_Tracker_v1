@@ -118,6 +118,24 @@ See update history: `journalctl -t pi-weather-update`
 The Pi picks it up within 15 min and restarts the app automatically. `settings.json`
 is gitignored and preserved across updates.
 
+## Wi-Fi manager (Settings → 📶 Wi-Fi)
+
+The kiosk can scan/join Wi-Fi networks from the touchscreen. NetworkManager
+must authorize the service user — install this polkit rule once (sudo does NOT
+work here: the service runs with NoNewPrivileges):
+
+```bash
+sudo tee /etc/polkit-1/rules.d/50-flightrack-networkmanager.rules > /dev/null << 'EOF'
+polkit.addRule(function(action, subject) {
+  if (action.id.indexOf("org.freedesktop.NetworkManager.") === 0 &&
+      subject.user == "flightrack") {
+    return polkit.Result.YES;
+  }
+});
+EOF
+sudo systemctl restart polkit
+```
+
 ## Ports / troubleshooting
 | Service | Port | Check |
 |---------|------|-------|

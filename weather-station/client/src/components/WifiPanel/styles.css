@@ -30,10 +30,49 @@
   opacity: 0.6;
 }
 
-.body {
-  border-left: 2px solid rgba(255, 255, 255, 0.1);
-  padding-left: 10px;
-  margin-top: 4px;
+/* Expanded body floats as a top-anchored overlay so it never stretches the
+   settings column off-screen, and the on-screen keyboard fits below it. */
+.overlay {
+  position: fixed;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 470px;
+  max-width: calc(100vw - 20px);
+  max-height: 52vh;
+  overflow-y: auto;
+  z-index: 6000;
+  background: rgba(10, 16, 26, 0.98);
+  border: 1px solid rgba(120, 170, 255, 0.3);
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+}
+.overlay::-webkit-scrollbar {
+  width: 4px;
+}
+.overlay::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 2px;
+}
+
+.overlay-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.overlay-close {
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.7;
+  padding: 2px 6px;
+}
+.overlay-close:active {
+  opacity: 1;
 }
 
 .row {
