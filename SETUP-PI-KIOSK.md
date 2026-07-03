@@ -125,14 +125,26 @@ must authorize the service user — install this polkit rule once (sudo does NOT
 work here: the service runs with NoNewPrivileges):
 
 ```bash
-sudo tee /etc/polkit-1/rules.d/50-flightrack-networkmanager.rules > /dev/null << 'EOF'
+sudo tee /etc/polkit-1/rules.d/50-flightrack-kiosk.rules > /dev/null << 'EOF'
 polkit.addRule(function(action, subject) {
-  if (action.id.indexOf("org.freedesktop.NetworkManager.") === 0 &&
-      subject.user == "flightrack") {
-    return polkit.Result.YES;
+  if (subject.user == "flightrack") {
+    // Wi-Fi manager (Settings panel)
+    if (action.id.indexOf("org.freedesktop.NetworkManager.") === 0) {
+      return polkit.Result.YES;
+    }
+    // Auto-updater reboots the kiosk after applying a patch
+    if (action.id.indexOf("org.freedesktop.login1.reboot") === 0) {
+      return polkit.Result.YES;
+    }
+    // Fallback path: restart just the app service
+    if (action.id == "org.freedesktop.systemd1.manage-units" &&
+        action.lookup("unit") == "pi-weather-station.service") {
+      return polkit.Result.YES;
+    }
   }
 });
 EOF
+sudo rm -f /etc/polkit-1/rules.d/50-flightrack-networkmanager.rules
 sudo systemctl restart polkit
 ```
 

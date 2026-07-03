@@ -42,5 +42,16 @@ if git diff --name-only "$LOCAL" "$REMOTE" | grep -q "weather-station/package.js
   cd weather-station && npm install --omit=dev --silent && cd ..
 fi
 
-sudo /usr/bin/systemctl restart "$SERVICE"
-log "updated to $REMOTE and restarted $SERVICE"
+# Reboot after every applied patch (clean slate: server, Chromium, caches).
+# Plain systemctl first — polkit authorizes flightrack via the kiosk rules
+# file, and it works even under NoNewPrivileges (button-triggered updates).
+# sudo fallback covers timer-triggered runs on older setups; if neither can
+# reboot, at least restart the app so the patch takes effect server-side.
+log "updated to $REMOTE — rebooting"
+systemctl reboot 2>/dev/null ||
+  sudo -n /usr/bin/systemctl reboot 2>/dev/null ||
+  {
+    log "reboot not permitted — restarting $SERVICE instead"
+    systemctl restart "$SERVICE" 2>/dev/null ||
+      sudo -n /usr/bin/systemctl restart "$SERVICE"
+  }
