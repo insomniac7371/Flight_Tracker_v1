@@ -16,9 +16,16 @@ const UPPER = [
 ];
 const NUMS = [
   ["1","2","3","4","5","6","7","8","9","0"],
-  ["-","_","/",":",".","@","!","?","#","&"],
-  ["ABC","(",")",'"',"'",",","DEL"],
-  [" ","DONE"],
+  ["-","/",":",";","(",")","$","&","@",'"'],
+  ["#+=",".",",","?","!","'","_","DEL"],
+  ["ABC"," ","DONE"],
+];
+// Second symbols page — full coverage for Wi-Fi passwords (+ = * etc).
+const SYMS = [
+  ["[","]","{","}","#","%","^","*","+","="],
+  ["\\","|","~","<",">","€","£","¥","§","·"],
+  ["123",".",",","?","!","'","_","DEL"],
+  ["ABC"," ","DONE"],
 ];
 const NUMPAD = [
   ["1","2","3"],
@@ -27,7 +34,7 @@ const NUMPAD = [
   ["DEL","0","DONE"],
 ];
 
-const LABEL = { SHIFT: "⇧", DEL: "⌫", DONE: "✓", ABC: "ABC", "123": "123", " ": " " };
+const LABEL = { SHIFT: "⇧", DEL: "⌫", DONE: "✓", ABC: "ABC", "123": "123", "#+=": "#+=", " ": " " };
 
 /** Programmatically set a React-controlled input's value */
 function setNativeValue(el, value) {
@@ -134,6 +141,7 @@ const VirtualKeyboard = () => {
       case "DONE": setVisible(false); activeEl.current?.blur(); break;
       case "SHIFT": setMode((m) => m === "upper" ? "lower" : "upper"); break;
       case "123":  setMode("nums"); break;
+      case "#+=":  setMode("syms"); break;
       case "ABC":  setMode("lower"); break;
       default:
         typeChar(key);
@@ -143,7 +151,7 @@ const VirtualKeyboard = () => {
 
   if (!visible) return null;
 
-  const rows = { lower: LOWER, upper: UPPER, nums: NUMS, numpad: NUMPAD }[mode] || LOWER;
+  const rows = { lower: LOWER, upper: UPPER, nums: NUMS, syms: SYMS, numpad: NUMPAD }[mode] || LOWER;
 
   return (
     <div className={styles.keyboard} onPointerDown={(e) => e.preventDefault()}>
@@ -154,7 +162,7 @@ const VirtualKeyboard = () => {
             const isDel    = key === "DEL";
             const isDone   = key === "DONE";
             const isSpace  = key === " ";
-            const isWide   = isShift || isDel || key === "ABC" || key === "123";
+            const isWide   = isShift || isDel || key === "ABC" || key === "123" || key === "#+=";
             const isActive = isShift && mode === "upper";
             const cls = [
               styles.key,

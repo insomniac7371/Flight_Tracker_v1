@@ -154,13 +154,24 @@ async function connect(req, res) {
     }
   }
 
+  // A previous failed attempt leaves a broken saved profile behind, which
+  // makes retries reuse bad credentials and triggers the desktop's own
+  // password dialog. Clear it first when the caller supplies a password.
+  if (password) {
+    await nmcli(["connection", "delete", "id", ssid], 10000);
+  }
+
   const args = ["dev", "wifi", "connect", ssid];
   if (password) args.push("password", password);
 
-  const r = await nmcli(args, 60000);
-  if (r.ok && /successfully activated/i.test(r.out)) {
+  const r = await nmcli(args, 90000);
+  // Exit 0 = success; don't demand specific output text (wording varies).
+  if (r.ok) {
     return res.json({ ok: true, ssid });
   }
+
+  // Clean up the half-created profile so the next attempt starts fresh.
+  await nmcli(["connection", "delete", "id", ssid], 10000);
   // Don't echo raw nmcli output (may include the SSID quoting oddly) —
   // map the common failures to friendly messages.
   const msg = /secrets were required|802-11-wireless-security|invalid.*password|preshared/i.test(

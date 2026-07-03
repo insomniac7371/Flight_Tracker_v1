@@ -62,7 +62,8 @@ const WifiPanel = ({ open }) => {
     axios
       .post("/api/wifi/connect", {
         ssid: target.ssid,
-        password: target.secured ? password : undefined,
+        // Blank password on a saved network = use the stored profile.
+        password: target.secured && password ? password : undefined,
       })
       .then((res) => {
         const d = res.data || {};
@@ -72,7 +73,29 @@ const WifiPanel = ({ open }) => {
           setPassword("");
           refreshStatus();
         } else {
-          setStatus({ ok: false, msg: d.error || "Could not connect" });
+          // Slow associations can outlive the server's patience while
+          // NetworkManager finishes in the background — recheck before
+          // declaring failure.
+          const wanted = target.ssid;
+          setStatus({ ok: false, msg: "Still trying… checking connection" });
+          setTimeout(() => {
+            axios
+              .get("/api/wifi/status")
+              .then((sr) => {
+                const conn = sr.data && sr.data.connected;
+                if (conn && conn.ssid === wanted) {
+                  setStatus({ ok: true, msg: `Connected to ${wanted}` });
+                  setTarget(null);
+                  setPassword("");
+                  refreshStatus();
+                } else {
+                  setStatus({ ok: false, msg: d.error || "Could not connect" });
+                }
+              })
+              .catch(() =>
+                setStatus({ ok: false, msg: d.error || "Could not connect" })
+              );
+          }, 6000);
         }
       })
       .catch((err) => {
@@ -182,11 +205,15 @@ const WifiPanel = ({ open }) => {
 
               {target ? (
                 <div className={styles.connectRow}>
-                  {target.secured && !saved.includes(target.ssid) ? (
+                  {target.secured ? (
                     <input
                       type="text"
                       className={styles.pwInput}
-                      placeholder={`Password for ${target.ssid}`}
+                      placeholder={
+                        saved.includes(target.ssid)
+                          ? "Saved — blank uses stored password"
+                          : `Password for ${target.ssid}`
+                      }
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
@@ -199,6 +226,10 @@ const WifiPanel = ({ open }) => {
                       busy ||
                       (target.secured &&
                         !saved.includes(target.ssid) &&
+                        password.length < 8) ||
+                      (target.secured &&
+                        saved.includes(target.ssid) &&
+                        password.length > 0 &&
                         password.length < 8)
                     }
                   >
