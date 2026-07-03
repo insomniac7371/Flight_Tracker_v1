@@ -63,7 +63,7 @@ app.use(cors({
 // Prevent clients from caching the JS bundle — ensures updates are picked up
 // immediately on a kiosk that may never do a hard refresh.
 app.use((req, res, next) => {
-  if (req.path.endsWith(".js") || req.path.endsWith(".css") || req.path === "/" || req.path.endsWith(".html")) {
+  if (req.path.endsWith(".js") || req.path.endsWith(".css") || req.path === "/" || req.path.endsWith(".html") || req.path.endsWith("/")) {
     res.set("Cache-Control", "no-store");
   }
   next();

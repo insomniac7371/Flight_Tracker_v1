@@ -69,7 +69,8 @@ async function fetchWithTimeout(url, ms) {
       signal: ctrl.signal,
       headers: {
         Accept: "application/json",
-        "User-Agent": "DadFlightTracker/1.0 (kiosk)",
+        // PlaneSpotters requires a contact URL in the UA or it 403s.
+        "User-Agent": "DadFlightTracker/1.0 (+https://github.com/insomniac7371/Flight_Tracker_v1)",
       },
     });
   } finally {
