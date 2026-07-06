@@ -139,6 +139,30 @@ const WeatherMap = ({ zoom, dark }) => {
     prevTracked.current = trackedCallsign;
   }, [trackedCallsign, recenterHome]);
 
+  // Return-to-home: after 30s without touches, recenter on home and clear
+  // any selected plane/ship — unless a flight is being actively tracked.
+  useEffect(() => {
+    let timer;
+    const arm = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        if (!trackedCallsign) {
+          setSelectedAircraft(null);
+          setSelectedVessel(null);
+          recenterHome();
+        }
+        arm(); // keep the cycle going for the next stretch of inactivity
+      }, 30000);
+    };
+    const EVENTS = ["pointerdown", "pointermove", "wheel", "keydown"];
+    EVENTS.forEach((ev) => window.addEventListener(ev, arm, { passive: true }));
+    arm();
+    return () => {
+      clearTimeout(timer);
+      EVENTS.forEach((ev) => window.removeEventListener(ev, arm));
+    };
+  }, [trackedCallsign, recenterHome, setSelectedAircraft, setSelectedVessel]);
+
   const [mapTimestamps, setMapTimestamps] = useState(null);
   const [currentMapTimestampIdx, setCurrentMapTimestampIdx] = useState(0);
 

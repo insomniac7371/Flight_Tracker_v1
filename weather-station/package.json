@@ -1,6 +1,6 @@
 {
   "name": "dad-flight-tracker",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Flight + weather kiosk for the Raspberry Pi 7 inch touchscreen",
   "main": "index.js",
   "scripts": {
