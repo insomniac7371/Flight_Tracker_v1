@@ -116,6 +116,7 @@ const WeatherMap = ({ zoom, dark }) => {
     setSelectedAircraft,
     selectedFlightInfo,
     trackedCallsign,
+    setTrackedCallsign,
     owmApiKey,
     getOwmApiKey,
     activeWxLayer,
@@ -447,7 +448,15 @@ const WeatherMap = ({ zoom, dark }) => {
       dragging={true}
       keyboard={false}
       fadeAnimation={false}
-    zoomControl={false}
+      zoomControl={false}
+      onClick={() => {
+        // Tapping empty map deselects any plane/ship and stops tracking
+        // (same as the X button). Marker clicks don't reach here — Leaflet
+        // stops their propagation — so selecting still works.
+        setSelectedAircraft(null);
+        setSelectedVessel(null);
+        setTrackedCallsign(null);
+      }}
     >
       <AttributionControl position={"bottomleft"} />
       <ZoomControl position="bottomright" />
