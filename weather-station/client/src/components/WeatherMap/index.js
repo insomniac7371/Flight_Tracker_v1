@@ -165,6 +165,8 @@ const WeatherMap = ({ zoom, dark }) => {
 
   const [mapTimestamps, setMapTimestamps] = useState(null);
   const [currentMapTimestampIdx, setCurrentMapTimestampIdx] = useState(0);
+  // Tomorrow.io precip forecast overlay: null | 60 | 120 (minutes ahead).
+  const [precipForecast, setPrecipForecast] = useState(null);
 
   const [aircraft, setAircraft] = useState([]);
   const [aircraftSource, setAircraftSource] = useState(null);
@@ -485,6 +487,15 @@ const WeatherMap = ({ zoom, dark }) => {
           maxNativeZoom={8}
         />
       ))}
+      {precipForecast ? (
+        <TileLayer
+          key={`precip-${precipForecast}`}
+          attribution='Forecast: <a href="https://www.tomorrow.io/">Tomorrow.io</a>'
+          url={`/api/precip-tile/${precipForecast}/{z}/{x}/{y}.png`}
+          opacity={0.55}
+          maxNativeZoom={12}
+        />
+      ) : null}
       {markerIsVisible && markerPosition ? (
         <Marker position={markerPosition} opacity={0.65}></Marker>
       ) : null}
@@ -656,6 +667,22 @@ const WeatherMap = ({ zoom, dark }) => {
           ) : null}
         </button>
       ))}
+      <button
+        type="button"
+        className={`${styles.wxChip} ${precipForecast === 60 ? styles.wxChipOn : ""}`}
+        onClick={() => setPrecipForecast((p) => (p === 60 ? null : 60))}
+        title="Forecast rain 1 hour ahead (Tomorrow.io)"
+      >
+        Rain +1h
+      </button>
+      <button
+        type="button"
+        className={`${styles.wxChip} ${precipForecast === 120 ? styles.wxChipOn : ""}`}
+        onClick={() => setPrecipForecast((p) => (p === 120 ? null : 120))}
+        title="Forecast rain 2 hours ahead (Tomorrow.io)"
+      >
+        Rain +2h
+      </button>
       {!owmApiKey ? (
         <span className={styles.wxHint}>add OWM key in settings</span>
       ) : null}

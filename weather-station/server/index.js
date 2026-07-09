@@ -17,6 +17,7 @@ const lightningCtrl = require("./lightningCtrl");
 const weatherCtrl = require("./weatherCtrl");
 const updateCtrl = require("./updateCtrl");
 const wifiCtrl = require("./wifiCtrl");
+const precipTileCtrl = require("./precipTileCtrl");
 
 const {
   getSettings,
@@ -110,6 +111,8 @@ app.get("/api/vessels", vesselCtrl.getVessels);
 app.get("/api/wx-points", wxPointsCtrl.getWxPoints);
 
 app.get("/api/weather", weatherCtrl.getWeather);
+
+app.get("/api/precip-tile/:offset/:z/:x/:y.png", precipTileCtrl.getPrecipTile);
 
 app.get("/api/alerts", extraCtrl.getAlerts);
 app.get("/api/aqi", extraCtrl.getAqi);

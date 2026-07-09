@@ -1,17 +1,20 @@
 .banner {
   position: fixed;
-  top: 10px;
-  left: 50%;
+  /* Below the layer-chip row so it never covers the tabs, and horizontally
+     centered on the MAP area (viewport minus the 275px info panel), not the
+     whole screen. */
+  top: 52px;
+  left: calc((100vw - 275px) / 2);
   transform: translateX(-50%);
   z-index: 4000;
-  max-width: 94%;
+  max-width: calc(100vw - 275px - 20px);
   animation: dropIn 0.35s ease;
 }
 
 @keyframes dropIn {
   from {
     opacity: 0;
-    transform: translate(-50%, -16px);
+    transform: translate(-50%, -12px);
   }
   to {
     opacity: 1;
