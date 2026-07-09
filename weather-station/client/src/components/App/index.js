@@ -7,7 +7,6 @@ import WeatherMap from "~/components/WeatherMap";
 import InfoPanel from "~/components/InfoPanel";
 import Settings from "~/components/Settings";
 import OverheadBanner from "~/components/OverheadBanner";
-import AlertBanner from "~/components/AlertBanner";
 import VirtualKeyboard from "~/components/VirtualKeyboard";
 import InactivityDim from "~/components/InactivityDim";
 
@@ -64,7 +63,6 @@ const App = () => {
       }`}
     >
       <div className={styles.container}>
-        <AlertBanner />
         <OverheadBanner />
         <div className={styles.settingsContainer}>
           <Settings />

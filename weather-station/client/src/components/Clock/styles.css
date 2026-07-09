@@ -1,7 +1,9 @@
 .date{
-    display: flex;
-    justify-content: flex-end;
-    font-size: 30px;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 27px;
 }
 
 .time-row {

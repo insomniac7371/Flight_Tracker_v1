@@ -6,7 +6,7 @@
   height: 100vh;
   overflow: hidden;
   display: grid;
-  grid-template-columns: auto 290px;
+  grid-template-columns: auto 275px;
   /* minmax(0,1fr) pins the row to the viewport height — with `auto`, tall
      content inflates the row past 100vh and pushes the bottom controls
      off-screen. */

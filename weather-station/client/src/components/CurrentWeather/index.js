@@ -30,6 +30,9 @@ const CurrentWeather = () => {
   const { currentWeatherData, tempUnit, speedUnit, sunriseTime, sunsetTime } =
     useContext(AppContext);
   const [aqi, setAqi] = useState(null);
+  const [alerts, setAlerts] = useState([]);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertIdx, setAlertIdx] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -43,6 +46,26 @@ const CurrentWeather = () => {
     };
     load();
     const id = setInterval(load, 10 * 60 * 1000);
+    return () => {
+      active = false;
+      clearInterval(id);
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    const load = () => {
+      axios
+        .get("/api/alerts")
+        .then((res) => {
+          if (active && res && res.data) {
+            setAlerts(Array.isArray(res.data.alerts) ? res.data.alerts : []);
+          }
+        })
+        .catch(() => { /* keep last known alerts */ });
+    };
+    load();
+    const id = setInterval(load, 5 * 60 * 1000);
     return () => {
       active = false;
       clearInterval(id);
@@ -73,6 +96,12 @@ const CurrentWeather = () => {
       : true;
   const { icon: weatherIcon, desc: weatherDesc } =
     parseWeatherCode(weatherCode, daylight) || {};
+
+  // When an NWS alert is active it takes over the last stats tile (in place
+  // of pressure) and glows in a caution color; tapping opens the details.
+  const activeAlert = alerts.length
+    ? alerts[Math.min(alertIdx, alerts.length - 1)]
+    : null;
 
   return (
     <div className={styles.container}>
@@ -132,7 +161,23 @@ const CurrentWeather = () => {
           <div className={styles.statValue}>{parseInt(humidity)}%</div>
           <div className={styles.statLabel}>Humidity</div>
         </div>
-        {pressureSurfaceLevel != null ? (
+        {activeAlert ? (
+          <div
+            className={`${styles.statCell} ${styles.alertCell} ${
+              sevClass(activeAlert.severity, styles)
+            }`}
+            onClick={() => setAlertOpen(true)}
+            role="button"
+          >
+            <div className={styles.alertTitle}>
+              {shortEvent(activeAlert.event)}
+            </div>
+            <span className={styles.alertSign}>⚠</span>
+            {alerts.length > 1 ? (
+              <div className={styles.alertMore}>+{alerts.length - 1}</div>
+            ) : null}
+          </div>
+        ) : pressureSurfaceLevel != null ? (
           <div className={styles.statCell}>
             <span className={styles.statIcon}>
               <InlineIcon icon={barometerIcon} />
@@ -155,6 +200,61 @@ const CurrentWeather = () => {
           </div>
         ) : null}
       </div>
+      {alertOpen && activeAlert ? (
+        <div className={styles.alertOverlay} onClick={() => setAlertOpen(false)}>
+          <div
+            className={styles.alertModal}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className={`${styles.alertModalHead} ${
+                sevClass(activeAlert.severity, styles)
+              }`}
+            >
+              <span>⚠ {activeAlert.event}</span>
+              <button
+                className={styles.alertClose}
+                onClick={() => setAlertOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className={styles.alertModalBody}>
+              {activeAlert.headline ? (
+                <p className={styles.alertHeadline}>{activeAlert.headline}</p>
+              ) : null}
+              <div className={styles.alertMeta}>
+                {activeAlert.severity ? (
+                  <span>Severity: {activeAlert.severity}</span>
+                ) : null}
+                {activeAlert.area ? <span>{activeAlert.area}</span> : null}
+              </div>
+              {activeAlert.description ? (
+                <p className={styles.alertDesc}>{activeAlert.description}</p>
+              ) : null}
+              {activeAlert.instruction ? (
+                <p className={styles.alertInstruction}>
+                  {activeAlert.instruction}
+                </p>
+              ) : null}
+              {alerts.length > 1 ? (
+                <div className={styles.alertPager}>
+                  {alerts.map((al, i) => (
+                    <button
+                      key={al.id || i}
+                      className={i === alertIdx ? styles.alertPagerOn : ""}
+                      onClick={() => setAlertIdx(i)}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+              <p className={styles.alertSrc}>{activeAlert.sender || "NWS"}</p>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };
@@ -195,6 +295,29 @@ const parseWeatherCode = (code, isDay) => {
     case 3002: return { desc: "Strong wind", icon: strongWind };
   }
 };
+
+/**
+ * Map an NWS severity to a caution-color CSS class.
+ * @param {string} sev - alert severity
+ * @param {Object} styles - CSS module
+ * @returns {string} class name
+ */
+function sevClass(sev, styles) {
+  const s = (sev || "").toLowerCase();
+  if (s === "extreme" || s === "severe") return styles.sevSevere;
+  if (s === "moderate") return styles.sevModerate;
+  return styles.sevMinor;
+}
+
+/**
+ * Trim a verbose NWS event name for the small tile (wraps to 2 lines in CSS).
+ * @param {string} event - full event name
+ * @returns {string} tile label
+ */
+function shortEvent(event) {
+  const e = event || "Alert";
+  return e.length > 22 ? `${e.slice(0, 20)}…` : e;
+}
 
 function degToCompass(deg) {
   const dirs = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];

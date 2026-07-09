@@ -25,8 +25,10 @@ const Clock = () => {
   return (
     <div>
       <div className={styles.date}>
-        {format(date, "cccc").toUpperCase()}{" "}
-        {format(date, "LLLL").toUpperCase()} {format(date, "d")}
+        {`${format(date, "cccc")} ${format(date, "LLLL")} ${format(
+          date,
+          "d"
+        )}`.toUpperCase()}
       </div>
       {clockTime === "12" ? (
         <div className={styles.timeRow}>
